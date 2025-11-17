@@ -1,6 +1,3 @@
-Excenergy-AirConditioner-Control
-================================
-
 # Remote Climate Control System (Raspberry Pi + Node-RED + RuuviTag + Midea AC)
 
 Este proyecto implementa un sistema completo de **medición**, **control inteligente** y **automatización local** para un aire acondicionado Midea, utilizando:

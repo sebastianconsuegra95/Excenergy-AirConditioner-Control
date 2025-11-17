@@ -1,7 +1,7 @@
 {
     "name": "Excenergy-AirConditioner-Control",
-    "description": "A Node-RED Project",
-    "version": "0.0.1",
+    "description": "Este proyecto convierte una Raspberry Pi en un sistema inteligente de control climático que combina un sensor RuuviTag y un aire acondicionado Midea. La Pi lee la temperatura vía Bluetooth, aplica una lógica de control con histéresis y ajusta automáticamente el aire —todo local por LAN usando msmart-ng y midea-beautiful-air, sin depender de la nube. Node-RED coordina el flujo completo, gestiona los tokens del Midea y ejecuta scripts Python en entornos virtuales, logrando un control preciso, autónomo y altamente personalizable del ambiente interior.",
+    "version": "1.0.0",
     "dependencies": {
         "@background404/node-red-contrib-python-venv": "0.5.6"
     },
