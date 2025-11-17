@@ -1,0 +1,432 @@
+[
+    {
+        "id": "c63bddecbef011e6",
+        "type": "tab",
+        "label": "Scan for Ruuvi Tag",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "5ec75898e9c0cd9f",
+        "type": "tab",
+        "label": "Scan for Midea",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "058bfc3087a116e9",
+        "type": "venv-config",
+        "venvname": "venv-midea",
+        "version": "default"
+    },
+    {
+        "id": "155d74fd3016463f",
+        "type": "venv-config",
+        "venvname": "venv-ruuvi",
+        "version": "default"
+    },
+    {
+        "id": "862bfde131759984",
+        "type": "pip",
+        "z": "c63bddecbef011e6",
+        "venvconfig": "155d74fd3016463f",
+        "name": "Install Dependencies Python Venv RuuviTag",
+        "arg": "ruuvitag-sensor",
+        "action": "install",
+        "tail": true,
+        "x": 390,
+        "y": 120,
+        "wires": [
+            [
+                "076c42b60217eddf"
+            ]
+        ]
+    },
+    {
+        "id": "3571f8e567c9959f",
+        "type": "inject",
+        "z": "c63bddecbef011e6",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 120,
+        "wires": [
+            [
+                "862bfde131759984"
+            ]
+        ]
+    },
+    {
+        "id": "599132570f0402c7",
+        "type": "venv",
+        "z": "c63bddecbef011e6",
+        "venvconfig": "155d74fd3016463f",
+        "name": "Python Venv RuuviTag",
+        "code": "import asyncio\nimport json\nfrom ruuvitag_sensor.ruuvi import RuuviTagSensor\n\nTARGET_MAC = \"E6:45:04:1B:1F:76\"  # Ej: \"F4:A5:74:89:16:57\"\n\nasync def read_once():\n    async for mac, data in RuuviTagSensor.get_data_async():\n        if TARGET_MAC and mac.upper() != TARGET_MAC.upper():\n            continue\n        return {\"mac\": mac, **data}\n\nresult = asyncio.run(read_once())\n# Node-RED espera que imprimas algo por stdout\nprint(json.dumps(result))",
+        "continuous": false,
+        "x": 320,
+        "y": 60,
+        "wires": [
+            [
+                "0a65c196666f8318"
+            ]
+        ]
+    },
+    {
+        "id": "21517e1f090dfbeb",
+        "type": "inject",
+        "z": "c63bddecbef011e6",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "15",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "5",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 130,
+        "y": 60,
+        "wires": [
+            [
+                "599132570f0402c7"
+            ]
+        ]
+    },
+    {
+        "id": "a2889ea9ee852bba",
+        "type": "debug",
+        "z": "c63bddecbef011e6",
+        "name": "debug 6",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 620,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "0a65c196666f8318",
+        "type": "json",
+        "z": "c63bddecbef011e6",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 490,
+        "y": 60,
+        "wires": [
+            [
+                "a2889ea9ee852bba"
+            ]
+        ]
+    },
+    {
+        "id": "365e8117cd584fe3",
+        "type": "pip",
+        "z": "c63bddecbef011e6",
+        "venvconfig": "058bfc3087a116e9",
+        "name": "Install Dependencies Python Venv Midea",
+        "arg": "msmart-ng midea-beautiful-air",
+        "action": "install",
+        "tail": true,
+        "x": 380,
+        "y": 360,
+        "wires": [
+            [
+                "f690844245496cfe"
+            ]
+        ]
+    },
+    {
+        "id": "0a36650224686018",
+        "type": "inject",
+        "z": "c63bddecbef011e6",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 360,
+        "wires": [
+            [
+                "365e8117cd584fe3"
+            ]
+        ]
+    },
+    {
+        "id": "29bcfcd8b085dece",
+        "type": "venv",
+        "z": "c63bddecbef011e6",
+        "venvconfig": "058bfc3087a116e9",
+        "name": "Python Venv Midea",
+        "code": "import asyncio\nfrom msmart.discover import Discover\n\nAC_IP = \"192.168.1.4\"   # ← cambiar por tu IP\n\ndef safe_hex(value):\n    \"\"\"Convierte bytes→hex o retorna strings tal cual.\"\"\"\n    if value is None:\n        return None\n    if isinstance(value, bytes):\n        return value.hex()\n    if isinstance(value, str):\n        return value\n    return None\n\nasync def main():\n    devices = await Discover.discover()\n    result = {\"found\": False}\n\n    for dev in devices:\n        if dev.ip == AC_IP:\n            result = {\n                \"found\": True,\n                \"ip\": dev.ip,\n                \"id\": dev.id,\n                \"token\": safe_hex(dev.token),\n                \"key\": safe_hex(dev.key)\n            }\n            break\n\n    return result\n\noutput = asyncio.run(main())\n\nprint(json.dumps(output))\n",
+        "continuous": false,
+        "x": 310,
+        "y": 240,
+        "wires": [
+            [
+                "7137965e16478cc9"
+            ]
+        ]
+    },
+    {
+        "id": "10c0bfde9e6968fa",
+        "type": "inject",
+        "z": "c63bddecbef011e6",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "5",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 240,
+        "wires": [
+            [
+                "29bcfcd8b085dece"
+            ]
+        ]
+    },
+    {
+        "id": "e189a59bc6e265a3",
+        "type": "debug",
+        "z": "c63bddecbef011e6",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 780,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "7137965e16478cc9",
+        "type": "json",
+        "z": "c63bddecbef011e6",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 470,
+        "y": 240,
+        "wires": [
+            [
+                "5697bc0f9671285f"
+            ]
+        ]
+    },
+    {
+        "id": "f690844245496cfe",
+        "type": "debug",
+        "z": "c63bddecbef011e6",
+        "name": "debug 2",
+        "active": false,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 630,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "076c42b60217eddf",
+        "type": "debug",
+        "z": "c63bddecbef011e6",
+        "name": "debug 3",
+        "active": false,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 650,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "76a9586f29cbf3f4",
+        "type": "venv",
+        "z": "c63bddecbef011e6",
+        "venvconfig": "058bfc3087a116e9",
+        "name": "Python Venv Midea",
+        "code": "import json\nfrom midea_beautiful import appliance_state\n\n# ---- CONFIG ----\nAC_IP = \"192.168.1.4\"\nTOKEN = msg.get(\"token\")\nKEY   = msg.get(\"key\")\n\n# Parametros opcionales que vienen desde Node-RED\ntemp        = msg.get(\"temp\")\npower       = msg.get(\"power\")\nmode        = msg.get(\"mode\")\nfan_speed   = msg.get(\"fan_speed\")\nv_swing     = msg.get(\"vertical_swing\")\nturbo       = msg.get(\"turbo\")\n\n# Crear dispositivo LAN\ndevice = appliance_state(\n    address=AC_IP,\n    token=TOKEN,\n    key=KEY,\n    appliance_type=\"0xac\",\n    retries=3\n)\n\n# ---- ESTADO ANTERIOR ----\ndevice.refresh()\nestado_anterior = repr(device)   # 👈 YA NO ES STRING\n\n# ---- ARMAR LA ACCION ----\nkwargs = {}\n\nif temp is not None:\n    kwargs[\"target_temperature\"] = temp\n\nif power is not None:\n    kwargs[\"power\"] = power\n\nif mode is not None:\n    kwargs[\"mode\"] = mode\n\nif fan_speed is not None:\n    kwargs[\"fan_speed\"] = fan_speed\n\nif v_swing is not None:\n    kwargs[\"swing_vertical\"] = v_swing\n\nif turbo is not None:\n    kwargs[\"turbo\"] = turbo\n\n# ---- APLICAR CAMBIOS ----\ndevice.set_state(**kwargs)\ndevice.apply()\n\n# ---- ESTADO NUEVO ----\ndevice.refresh()\nestado_nuevo = repr(device)   # 👈 TAMBIÉN JSON REAL\n\n# ---- PRINT FINAL ----\nprint(json.dumps({\n    \"estado_anterior\": estado_anterior,\n    \"cambios_aplicados\": kwargs,\n    \"estado_nuevo\": estado_nuevo\n}))\n",
+        "continuous": false,
+        "x": 310,
+        "y": 300,
+        "wires": [
+            [
+                "70b10063b1c97052"
+            ]
+        ]
+    },
+    {
+        "id": "ce417c0b8f25ea18",
+        "type": "inject",
+        "z": "c63bddecbef011e6",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "key",
+                "v": "key",
+                "vt": "global"
+            },
+            {
+                "p": "token",
+                "v": "token",
+                "vt": "global"
+            },
+            {
+                "p": "temp",
+                "v": "24",
+                "vt": "num"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "5",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 300,
+        "wires": [
+            [
+                "76a9586f29cbf3f4"
+            ]
+        ]
+    },
+    {
+        "id": "d79d597d8a342080",
+        "type": "debug",
+        "z": "c63bddecbef011e6",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 600,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "70b10063b1c97052",
+        "type": "json",
+        "z": "c63bddecbef011e6",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 470,
+        "y": 300,
+        "wires": [
+            [
+                "d79d597d8a342080"
+            ]
+        ]
+    },
+    {
+        "id": "5697bc0f9671285f",
+        "type": "change",
+        "z": "c63bddecbef011e6",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "token",
+                "pt": "global",
+                "to": "payload.token",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "key",
+                "pt": "global",
+                "to": "payload.key",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 620,
+        "y": 240,
+        "wires": [
+            [
+                "e189a59bc6e265a3"
+            ]
+        ]
+    }
+]
