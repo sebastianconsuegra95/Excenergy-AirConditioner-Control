@@ -8,6 +8,63 @@
         "env": []
     },
     {
+        "id": "6e535542d4b13b54",
+        "type": "group",
+        "z": "c63bddecbef011e6",
+        "name": "Midea Control",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "365e8117cd584fe3",
+            "29bcfcd8b085dece",
+            "10c0bfde9e6968fa",
+            "e189a59bc6e265a3",
+            "7137965e16478cc9",
+            "f690844245496cfe",
+            "76a9586f29cbf3f4",
+            "ce417c0b8f25ea18",
+            "d79d597d8a342080",
+            "70b10063b1c97052",
+            "5697bc0f9671285f",
+            "0a36650224686018",
+            "f143df5aa4caba38",
+            "6cc4519fbed40c8b",
+            "b29e362d23ace6c4",
+            "ec38102cde2c86a0",
+            "c7e46e0061aa450b",
+            "3ed77b072725153c"
+        ],
+        "x": 54,
+        "y": 319,
+        "w": 1052,
+        "h": 382
+    },
+    {
+        "id": "0fd68e42db9f6c12",
+        "type": "group",
+        "z": "c63bddecbef011e6",
+        "name": "RuuviTag Meassure",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "862bfde131759984",
+            "3571f8e567c9959f",
+            "599132570f0402c7",
+            "21517e1f090dfbeb",
+            "a2889ea9ee852bba",
+            "0a65c196666f8318",
+            "076c42b60217eddf",
+            "bc5c3945035a5d66",
+            "0d1b2e02f8237054"
+        ],
+        "x": 54,
+        "y": 79,
+        "w": 752,
+        "h": 202
+    },
+    {
         "id": "058bfc3087a116e9",
         "type": "venv-config",
         "venvname": "venv-midea",
@@ -23,13 +80,14 @@
         "id": "862bfde131759984",
         "type": "pip",
         "z": "c63bddecbef011e6",
+        "g": "0fd68e42db9f6c12",
         "venvconfig": "155d74fd3016463f",
         "name": "Install Dependencies Python Venv RuuviTag",
         "arg": "ruuvitag-sensor",
         "action": "install",
         "tail": true,
-        "x": 390,
-        "y": 120,
+        "x": 430,
+        "y": 240,
         "wires": [
             [
                 "076c42b60217eddf"
@@ -40,6 +98,7 @@
         "id": "3571f8e567c9959f",
         "type": "inject",
         "z": "c63bddecbef011e6",
+        "g": "0fd68e42db9f6c12",
         "name": "",
         "props": [
             {
@@ -52,13 +111,13 @@
         ],
         "repeat": "",
         "crontab": "",
-        "once": false,
+        "once": true,
         "onceDelay": 0.1,
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 140,
-        "y": 120,
+        "x": 170,
+        "y": 240,
         "wires": [
             [
                 "862bfde131759984"
@@ -69,12 +128,13 @@
         "id": "599132570f0402c7",
         "type": "venv",
         "z": "c63bddecbef011e6",
+        "g": "0fd68e42db9f6c12",
         "venvconfig": "155d74fd3016463f",
-        "name": "Python Venv RuuviTag",
-        "code": "import asyncio\nimport json\nfrom ruuvitag_sensor.ruuvi import RuuviTagSensor\n\nTARGET_MAC = \"E6:45:04:1B:1F:76\"  # Ej: \"F4:A5:74:89:16:57\"\n\nasync def read_once():\n    async for mac, data in RuuviTagSensor.get_data_async():\n        if TARGET_MAC and mac.upper() != TARGET_MAC.upper():\n            continue\n        return {\"mac\": mac, **data}\n\nresult = asyncio.run(read_once())\n# Node-RED espera que imprimas algo por stdout\nprint(json.dumps(result))",
+        "name": "Scan RuuviTag",
+        "code": "import asyncio\nimport json\nfrom ruuvitag_sensor.ruuvi import RuuviTagSensor\n\nRUUVITAG_MAC = msg.get(\"RUUVITAG_MAC\")  # Ej: \"F4:A5:74:89:16:57\"\n\nasync def read_once():\n    async for mac, data in RuuviTagSensor.get_data_async():\n        if RUUVITAG_MAC and mac.upper() != RUUVITAG_MAC.upper():\n            continue\n        return {\"mac\": mac, **data}\n\nresult = asyncio.run(read_once())\n# Node-RED espera que imprimas algo por stdout\nprint(json.dumps(result))",
         "continuous": false,
-        "x": 320,
-        "y": 60,
+        "x": 340,
+        "y": 180,
         "wires": [
             [
                 "0a65c196666f8318"
@@ -85,14 +145,16 @@
         "id": "21517e1f090dfbeb",
         "type": "inject",
         "z": "c63bddecbef011e6",
+        "g": "0fd68e42db9f6c12",
         "name": "",
         "props": [
             {
                 "p": "payload"
             },
             {
-                "p": "topic",
-                "vt": "str"
+                "p": "RUUVITAG_MAC",
+                "v": "RUUVITAG_MAC",
+                "vt": "global"
             }
         ],
         "repeat": "15",
@@ -102,8 +164,8 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 130,
-        "y": 60,
+        "x": 170,
+        "y": 180,
         "wires": [
             [
                 "599132570f0402c7"
@@ -114,6 +176,7 @@
         "id": "a2889ea9ee852bba",
         "type": "debug",
         "z": "c63bddecbef011e6",
+        "g": "0fd68e42db9f6c12",
         "name": "debug 6",
         "active": true,
         "tosidebar": true,
@@ -123,22 +186,24 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 620,
-        "y": 60,
+        "y": 180,
         "wires": []
     },
     {
         "id": "0a65c196666f8318",
         "type": "json",
         "z": "c63bddecbef011e6",
+        "g": "0fd68e42db9f6c12",
         "name": "",
         "property": "payload",
         "action": "obj",
         "pretty": false,
         "x": 490,
-        "y": 60,
+        "y": 180,
         "wires": [
             [
-                "a2889ea9ee852bba"
+                "a2889ea9ee852bba",
+                "3a480bf70647d76d"
             ]
         ]
     },
@@ -146,13 +211,14 @@
         "id": "365e8117cd584fe3",
         "type": "pip",
         "z": "c63bddecbef011e6",
+        "g": "6e535542d4b13b54",
         "venvconfig": "058bfc3087a116e9",
         "name": "Install Dependencies Python Venv Midea",
         "arg": "msmart-ng midea-beautiful-air",
         "action": "install",
         "tail": true,
-        "x": 380,
-        "y": 360,
+        "x": 540,
+        "y": 660,
         "wires": [
             [
                 "f690844245496cfe"
@@ -160,44 +226,16 @@
         ]
     },
     {
-        "id": "0a36650224686018",
-        "type": "inject",
-        "z": "c63bddecbef011e6",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 140,
-        "y": 360,
-        "wires": [
-            [
-                "365e8117cd584fe3"
-            ]
-        ]
-    },
-    {
         "id": "29bcfcd8b085dece",
         "type": "venv",
         "z": "c63bddecbef011e6",
+        "g": "6e535542d4b13b54",
         "venvconfig": "058bfc3087a116e9",
-        "name": "Python Venv Midea",
-        "code": "import asyncio\nfrom msmart.discover import Discover\n\nAC_IP = \"192.168.1.4\"   # ← cambiar por tu IP\n\ndef safe_hex(value):\n    \"\"\"Convierte bytes→hex o retorna strings tal cual.\"\"\"\n    if value is None:\n        return None\n    if isinstance(value, bytes):\n        return value.hex()\n    if isinstance(value, str):\n        return value\n    return None\n\nasync def main():\n    devices = await Discover.discover()\n    result = {\"found\": False}\n\n    for dev in devices:\n        if dev.ip == AC_IP:\n            result = {\n                \"found\": True,\n                \"ip\": dev.ip,\n                \"id\": dev.id,\n                \"token\": safe_hex(dev.token),\n                \"key\": safe_hex(dev.key)\n            }\n            break\n\n    return result\n\noutput = asyncio.run(main())\n\nprint(json.dumps(output))\n",
+        "name": "Generate Key & Token Midea",
+        "code": "import asyncio\nfrom msmart.discover import Discover\n\nAC_IP = msg.get(\"AC_IP\")   # ← cambiar por tu IP\n\ndef safe_hex(value):\n    \"\"\"Convierte bytes→hex o retorna strings tal cual.\"\"\"\n    if value is None:\n        return None\n    if isinstance(value, bytes):\n        return value.hex()\n    if isinstance(value, str):\n        return value\n    return None\n\nasync def main():\n    devices = await Discover.discover()\n    result = {\"found\": False}\n\n    for dev in devices:\n        if dev.ip == AC_IP:\n            result = {\n                \"found\": True,\n                \"ip\": dev.ip,\n                \"id\": dev.id,\n                \"token\": safe_hex(dev.token),\n                \"key\": safe_hex(dev.key)\n            }\n            break\n\n    return result\n\noutput = asyncio.run(main())\n\nprint(json.dumps(output))\n",
         "continuous": false,
-        "x": 310,
-        "y": 240,
+        "x": 500,
+        "y": 620,
         "wires": [
             [
                 "7137965e16478cc9"
@@ -208,25 +246,27 @@
         "id": "10c0bfde9e6968fa",
         "type": "inject",
         "z": "c63bddecbef011e6",
+        "g": "6e535542d4b13b54",
         "name": "",
         "props": [
             {
                 "p": "payload"
             },
             {
-                "p": "topic",
-                "vt": "str"
+                "p": "AC_IP",
+                "v": "AC_IP",
+                "vt": "global"
             }
         ],
-        "repeat": "",
+        "repeat": "21600",
         "crontab": "",
-        "once": false,
+        "once": true,
         "onceDelay": "5",
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 140,
-        "y": 240,
+        "x": 290,
+        "y": 620,
         "wires": [
             [
                 "29bcfcd8b085dece"
@@ -237,6 +277,7 @@
         "id": "e189a59bc6e265a3",
         "type": "debug",
         "z": "c63bddecbef011e6",
+        "g": "6e535542d4b13b54",
         "name": "debug 1",
         "active": true,
         "tosidebar": true,
@@ -246,20 +287,21 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 780,
-        "y": 240,
+        "x": 1000,
+        "y": 620,
         "wires": []
     },
     {
         "id": "7137965e16478cc9",
         "type": "json",
         "z": "c63bddecbef011e6",
+        "g": "6e535542d4b13b54",
         "name": "",
         "property": "payload",
         "action": "obj",
         "pretty": false,
-        "x": 470,
-        "y": 240,
+        "x": 690,
+        "y": 620,
         "wires": [
             [
                 "5697bc0f9671285f"
@@ -270,6 +312,7 @@
         "id": "f690844245496cfe",
         "type": "debug",
         "z": "c63bddecbef011e6",
+        "g": "6e535542d4b13b54",
         "name": "debug 2",
         "active": false,
         "tosidebar": true,
@@ -279,14 +322,15 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 630,
-        "y": 360,
+        "x": 790,
+        "y": 660,
         "wires": []
     },
     {
         "id": "076c42b60217eddf",
         "type": "debug",
         "z": "c63bddecbef011e6",
+        "g": "0fd68e42db9f6c12",
         "name": "debug 3",
         "active": false,
         "tosidebar": true,
@@ -296,20 +340,21 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 650,
-        "y": 120,
+        "x": 690,
+        "y": 240,
         "wires": []
     },
     {
         "id": "76a9586f29cbf3f4",
         "type": "venv",
         "z": "c63bddecbef011e6",
+        "g": "6e535542d4b13b54",
         "venvconfig": "058bfc3087a116e9",
-        "name": "Python Venv Midea",
-        "code": "import json\nfrom midea_beautiful import appliance_state\n\n# ---- CONFIG ----\nAC_IP = \"192.168.1.4\"\nTOKEN = msg.get(\"token\")\nKEY   = msg.get(\"key\")\n\n# Parametros opcionales que vienen desde Node-RED\ntemp        = msg.get(\"temp\")\npower       = msg.get(\"power\")\nmode        = msg.get(\"mode\")\nfan_speed   = msg.get(\"fan_speed\")\nv_swing     = msg.get(\"vertical_swing\")\nturbo       = msg.get(\"turbo\")\n\n# Crear dispositivo LAN\ndevice = appliance_state(\n    address=AC_IP,\n    token=TOKEN,\n    key=KEY,\n    appliance_type=\"0xac\",\n    retries=3\n)\n\n# ---- ESTADO ANTERIOR ----\ndevice.refresh()\nestado_anterior = repr(device)   # 👈 YA NO ES STRING\n\n# ---- ARMAR LA ACCION ----\nkwargs = {}\n\nif temp is not None:\n    kwargs[\"target_temperature\"] = temp\n\nif power is not None:\n    kwargs[\"power\"] = power\n\nif mode is not None:\n    kwargs[\"mode\"] = mode\n\nif fan_speed is not None:\n    kwargs[\"fan_speed\"] = fan_speed\n\nif v_swing is not None:\n    kwargs[\"swing_vertical\"] = v_swing\n\nif turbo is not None:\n    kwargs[\"turbo\"] = turbo\n\n# ---- APLICAR CAMBIOS ----\ndevice.set_state(**kwargs)\ndevice.apply()\n\n# ---- ESTADO NUEVO ----\ndevice.refresh()\nestado_nuevo = repr(device)   # 👈 TAMBIÉN JSON REAL\n\n# ---- PRINT FINAL ----\nprint(json.dumps({\n    \"estado_anterior\": estado_anterior,\n    \"cambios_aplicados\": kwargs,\n    \"estado_nuevo\": estado_nuevo\n}))\n",
+        "name": "Set Control Midea",
+        "code": "import json\nfrom midea_beautiful import appliance_state\n\n# ---- CONFIG ----\nAC_IP = msg.get(\"AC_IP\")\nTOKEN = msg.get(\"token\")\nKEY   = msg.get(\"key\")\n\n# Parametros opcionales que vienen desde Node-RED\ntemp                = msg.get(\"temp\")       # Numero Entero String\nrunning             = msg.get(\"power\")      # True/False\nmode                = msg.get(\"mode\")       # Cool: 2, Dry: 3, Fan: 5\nfan_speed           = msg.get(\"fan_speed\")  # Low: 40, Medium: 60, High: 80, Auto: 102, Mute: 100\nvertical_swing      = msg.get(\"v_swing\")    # True/False\nturbo               = msg.get(\"turbo\")      # True/False\n\n# Crear dispositivo LAN\ndevice = appliance_state(\n    address=AC_IP,\n    token=TOKEN,\n    key=KEY,\n    appliance_type=\"0xac\",\n    retries=3\n)\n\n# ---- ESTADO ANTERIOR ----\ndevice.refresh()\nestado_anterior = repr(device)   # 👈 YA NO ES STRING\n\n# ---- ARMAR LA ACCION ----\nkwargs = {\"beep_prompt\":\"True\"}\n\nif temp is not None:\n    kwargs[\"target_temperature\"] = temp\n\nif running is not None:\n    kwargs[\"running\"] = running\n\nif mode is not None:\n    kwargs[\"mode\"] = mode\n\nif fan_speed is not None:\n    kwargs[\"fan_speed\"] = fan_speed\n\nif vertical_swing is not None:\n    kwargs[\"vertical_swing\"] = vertical_swing\n\nif turbo is not None:\n    kwargs[\"turbo\"] = turbo\n\n# ---- APLICAR CAMBIOS ----\ndevice.set_state(**kwargs)\ndevice.apply()\n\n# ---- ESTADO NUEVO ----\ndevice.refresh()\nestado_nuevo = repr(device)   # 👈 TAMBIÉN JSON REAL\n\n# ---- PRINT FINAL ----\nprint(json.dumps({\n    \"estado_anterior\": estado_anterior,\n    \"cambios_aplicados\": kwargs,\n    \"estado_nuevo\": estado_nuevo\n}))\n",
         "continuous": false,
-        "x": 310,
-        "y": 300,
+        "x": 710,
+        "y": 460,
         "wires": [
             [
                 "70b10063b1c97052"
@@ -320,25 +365,16 @@
         "id": "ce417c0b8f25ea18",
         "type": "inject",
         "z": "c63bddecbef011e6",
-        "name": "",
+        "g": "6e535542d4b13b54",
+        "name": "Power On/Off",
         "props": [
             {
                 "p": "payload"
             },
             {
-                "p": "key",
-                "v": "key",
-                "vt": "global"
-            },
-            {
-                "p": "token",
-                "v": "token",
-                "vt": "global"
-            },
-            {
-                "p": "temp",
-                "v": "24",
-                "vt": "num"
+                "p": "power",
+                "v": "True",
+                "vt": "str"
             }
         ],
         "repeat": "",
@@ -348,11 +384,11 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 140,
-        "y": 300,
+        "x": 290,
+        "y": 360,
         "wires": [
             [
-                "76a9586f29cbf3f4"
+                "f143df5aa4caba38"
             ]
         ]
     },
@@ -360,6 +396,7 @@
         "id": "d79d597d8a342080",
         "type": "debug",
         "z": "c63bddecbef011e6",
+        "g": "6e535542d4b13b54",
         "name": "debug 4",
         "active": true,
         "tosidebar": true,
@@ -368,20 +405,21 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 600,
-        "y": 300,
+        "x": 1000,
+        "y": 460,
         "wires": []
     },
     {
         "id": "70b10063b1c97052",
         "type": "json",
         "z": "c63bddecbef011e6",
+        "g": "6e535542d4b13b54",
         "name": "",
         "property": "payload",
         "action": "obj",
         "pretty": false,
-        "x": 470,
-        "y": 300,
+        "x": 870,
+        "y": 460,
         "wires": [
             [
                 "d79d597d8a342080"
@@ -392,6 +430,7 @@
         "id": "5697bc0f9671285f",
         "type": "change",
         "z": "c63bddecbef011e6",
+        "g": "6e535542d4b13b54",
         "name": "",
         "rules": [
             {
@@ -414,12 +453,339 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 620,
-        "y": 240,
+        "x": 840,
+        "y": 620,
         "wires": [
             [
                 "e189a59bc6e265a3"
             ]
         ]
+    },
+    {
+        "id": "bc5c3945035a5d66",
+        "type": "change",
+        "z": "c63bddecbef011e6",
+        "g": "0fd68e42db9f6c12",
+        "name": "Enviroment Variables",
+        "rules": [
+            {
+                "t": "set",
+                "p": "AC_IP",
+                "pt": "global",
+                "to": "192.168.1.4",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "RUUVITAG_MAC",
+                "pt": "global",
+                "to": "E6:45:04:1B:1F:76",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 360,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "0a36650224686018",
+        "type": "inject",
+        "z": "c63bddecbef011e6",
+        "g": "6e535542d4b13b54",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 290,
+        "y": 660,
+        "wires": [
+            [
+                "365e8117cd584fe3"
+            ]
+        ]
+    },
+    {
+        "id": "0d1b2e02f8237054",
+        "type": "inject",
+        "z": "c63bddecbef011e6",
+        "g": "0fd68e42db9f6c12",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 170,
+        "y": 120,
+        "wires": [
+            [
+                "bc5c3945035a5d66"
+            ]
+        ]
+    },
+    {
+        "id": "f143df5aa4caba38",
+        "type": "change",
+        "z": "c63bddecbef011e6",
+        "g": "6e535542d4b13b54",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "AC_IP",
+                "pt": "msg",
+                "to": "AC_IP",
+                "tot": "global"
+            },
+            {
+                "t": "set",
+                "p": "token",
+                "pt": "msg",
+                "to": "token",
+                "tot": "global"
+            },
+            {
+                "t": "set",
+                "p": "key",
+                "pt": "msg",
+                "to": "key",
+                "tot": "global"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 520,
+        "y": 460,
+        "wires": [
+            [
+                "76a9586f29cbf3f4"
+            ]
+        ]
+    },
+    {
+        "id": "6cc4519fbed40c8b",
+        "type": "inject",
+        "z": "c63bddecbef011e6",
+        "g": "6e535542d4b13b54",
+        "name": "Set Temperature",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "temp",
+                "v": "24",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "5",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 280,
+        "y": 400,
+        "wires": [
+            [
+                "f143df5aa4caba38"
+            ]
+        ]
+    },
+    {
+        "id": "b29e362d23ace6c4",
+        "type": "inject",
+        "z": "c63bddecbef011e6",
+        "g": "6e535542d4b13b54",
+        "name": "Vertical Swing On/Off",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "v_swing",
+                "v": "True",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "5",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 260,
+        "y": 440,
+        "wires": [
+            [
+                "f143df5aa4caba38"
+            ]
+        ]
+    },
+    {
+        "id": "ec38102cde2c86a0",
+        "type": "inject",
+        "z": "c63bddecbef011e6",
+        "g": "6e535542d4b13b54",
+        "name": "Mode Cool/Dry/Fan",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "mode",
+                "v": "2",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "5",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 270,
+        "y": 480,
+        "wires": [
+            [
+                "f143df5aa4caba38"
+            ]
+        ]
+    },
+    {
+        "id": "c7e46e0061aa450b",
+        "type": "inject",
+        "z": "c63bddecbef011e6",
+        "g": "6e535542d4b13b54",
+        "name": "Fan Speed Low/Med/High/Auto",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "fan_speed",
+                "v": "102",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "5",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 230,
+        "y": 520,
+        "wires": [
+            [
+                "f143df5aa4caba38"
+            ]
+        ]
+    },
+    {
+        "id": "3ed77b072725153c",
+        "type": "inject",
+        "z": "c63bddecbef011e6",
+        "g": "6e535542d4b13b54",
+        "name": "Turbo On/Off",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "turbo",
+                "v": "False",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "5",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 290,
+        "y": 560,
+        "wires": [
+            [
+                "f143df5aa4caba38"
+            ]
+        ]
+    },
+    {
+        "id": "3a480bf70647d76d",
+        "type": "function",
+        "z": "c63bddecbef011e6",
+        "name": "function 1",
+        "func": "/***************************************\n * CONTROL DE AIRE ACONDICIONADO MIDEA\n * Usando sensor Ruuvi + histéresis\n ***************************************/\n\n// ---- Parámetros configurables ----\nconst T_ref = 24.0;               // Temperatura objetivo deseada\nconst deadband = 1;             // Histéresis (°C)\nconst step = 1;                 // Ajuste por paso (°C)\nconst Tmin_change = 0.5 * 60 * 1000; // Intervalo mínimo entre cambios (5 min)\n\nconst T_set_min = 17.0;           // Límite mínimo del AC\nconst T_set_max = 28.0;           // Límite máximo del AC\n\n// ---- Temperatura medida desde el Ruuvi ----\nconst T_meas = msg.payload.temperature;  // Ajusta si tu dato viene en otra propiedad\n\nif (typeof T_meas !== \"number\") {\n    node.error(\"Temperatura inválida recibida\", msg);\n    return null;\n}\n\n// ---- Estado guardado entre llamadas ----\nlet T_set = context.get(\"T_set\");\nif (T_set === undefined) {\n    T_set = T_ref; // Valor inicial\n}\n\nlet lastChange = context.get(\"lastChange\") || 0;\nconst now = Date.now();\n\n// ---- Cálculo de error ----\nconst error = T_meas - T_ref;\n\n// Por defecto no hay ajuste\nlet newSet = T_set;\nlet changed = false;\n\n// ---- Lógica: verificar si ya pasó el tiempo mínimo ----\nif (now - lastChange >= Tmin_change) {\n\n    if (error > deadband) {\n        // Hace más calor → bajar la temperatura del AC\n        newSet = T_set - step;\n        changed = true;\n\n    } else if (error < -deadband) {\n        // Hace más frío → subir la temperatura del AC\n        newSet = T_set + step;\n        changed = true;\n    }\n\n    // Respetar límites del equipo\n    if (changed) {\n        newSet = Math.min(T_set_max, Math.max(T_set_min, newSet));\n    }\n}\n\n// ---- Si hay cambio real, actualizar contexto ----\nif (changed && newSet !== T_set) {\n    context.set(\"T_set\", newSet);\n    context.set(\"lastChange\", now);\n\n    msg.temp = newSet;   // 👉 el nodo Python lo usará para enviarlo al Midea\n    msg.control_action = {\n        T_meas,\n        T_ref,\n        T_set_before: T_set,\n        T_set_after: newSet,\n        error,\n        action: \"SETPOINT_UPDATED\"\n    };\n\n} else {\n    // No hubo cambio → pasar info para debug\n    msg.temp = null;\n    msg.control_action = {\n        T_meas,\n        T_ref,\n        T_set,\n        error,\n        action: \"NO_CHANGE\"\n    };\n}\n\n// ---- Mostrar estado en el nodo ----\nnode.status({\n    text: `T=${T_meas.toFixed(1)}°C | set=${newSet.toFixed(1)}°C`\n});\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 120,
+        "wires": [
+            [
+                "0a6ccbbf1f13620d"
+            ]
+        ]
+    },
+    {
+        "id": "0a6ccbbf1f13620d",
+        "type": "debug",
+        "z": "c63bddecbef011e6",
+        "name": "debug 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1140,
+        "y": 120,
+        "wires": []
     }
 ]
