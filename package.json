@@ -2,7 +2,9 @@
     "name": "Excenergy-AirConditioner-Control",
     "description": "A Node-RED Project",
     "version": "0.0.1",
-    "dependencies": {},
+    "dependencies": {
+        "@background404/node-red-contrib-python-venv": "0.5.6"
+    },
     "node-red": {
         "settings": {
             "flowFile": "flows.json",
