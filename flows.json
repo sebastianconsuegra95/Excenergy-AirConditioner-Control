@@ -245,7 +245,7 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 780,
+        "x": 800,
         "y": 240,
         "wires": []
     },
