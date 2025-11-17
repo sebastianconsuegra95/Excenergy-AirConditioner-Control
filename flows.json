@@ -8,14 +8,6 @@
         "env": []
     },
     {
-        "id": "5ec75898e9c0cd9f",
-        "type": "tab",
-        "label": "Scan for Midea",
-        "disabled": false,
-        "info": "",
-        "env": []
-    },
-    {
         "id": "058bfc3087a116e9",
         "type": "venv-config",
         "venvname": "venv-midea",
