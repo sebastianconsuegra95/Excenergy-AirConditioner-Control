@@ -46,18 +46,18 @@ deactivate
 
 ### 🔍 Lectura de prueba
 ```bash
-~/venv-ruuvi/bin/python3 -m ruuvitag_sensor -g E6:45:04:1B:1F:76
+~/venv-ruuvi/bin/python3 -m ruuvitag_sensor -g AA:BB:CC:DD:EE:FF
 ```
 
 ---
 
 # 📌 2. Instalación del entorno Midea (LAN control)
 
-Usamos la combinación:
+Usamos:
 
-- **msmart-ng** → Descubre key/token
-- **midea-beautiful-air** → Control LAN estable
-- **midea-beautiful-air-cli** → Testing y comandos manuales
+- **msmart-ng** → Descubre key/token  
+- **midea-beautiful-air** → Control LAN  
+- **midea-beautiful-air-cli** → Testing  
 
 ### 🔧 Crear entorno virtual
 ```bash
@@ -78,7 +78,7 @@ source ~/venv-midea/bin/activate
 msmart-ng discover
 ```
 
-Ejemplo de salida:
+Ejemplo:
 ```json
 {
   "id": "150633094208661",
@@ -88,13 +88,11 @@ Ejemplo de salida:
 }
 ```
 
-Ese token/key se guarda luego en variables globales de Node-RED.
-
 ---
 
 # 📌 4. Probar control desde CLI (midea-beautiful-air-cli)
 
-### 🔍 Descubrir equipo con credenciales en cloud
+### 🔍 Descubrir equipo (cloud)
 ```bash
 midea-beautiful-air-cli discover --account "email" --password "pass" --app MSmartHome
 ```
@@ -114,12 +112,12 @@ midea-beautiful-air-cli set --ip 192.168.1.4 --target-temperature 23 --token TOK
 midea-beautiful-air-cli set --ip 192.168.1.4 --power on
 ```
 
-### 🌬 Cambiar velocidad del ventilador
+### 🌬 Velocidad del ventilador
 ```bash
 midea-beautiful-air-cli set --ip 192.168.1.4 --fan-speed 60
 ```
 
-### ↕ Activar swing
+### ↕ Swing
 ```bash
 midea-beautiful-air-cli set --ip 192.168.1.4 --vertical-swing on
 ```
@@ -133,58 +131,115 @@ midea-beautiful-air-cli set --ip 192.168.1.4 --turbo on
 
 # 📌 5. Node-RED – Flujo completo
 
-El flujo de Node-RED incluye:
+El flujo contiene:
 
 ✔ Lectura periódica del RuuviTag  
 ✔ Control inteligente por histéresis  
 ✔ Ajuste autónomo del AC  
-✔ Cambios manuales (temperatura, modo, swing, turbo, fan speed)  
-✔ Entorno Python por venv para RuuviTag  
-✔ Entorno Python por venv para Midea  
+✔ Controles manuales (temperatura, modo, swing, turbo, fan speed)  
+✔ Scripts Python encapsulados  
+✔ Tokens globales  
+✔ Entorno Python independiente por venv  
 
-En este archivo se incluye:
-
-- Instalación de dependencias automáticas
-- Tokens guardados globalmente
-- Scripts Python encapsulados
-- Lógica de control automático
-- Comandos individualizados
-
-**El export del flujo completo está en el archivo `.json` entregado previamente.**
+El archivo `.json` del flujo completo se incluye por separado.
 
 ---
 
-# 📌 6. Lógica de control automático (JS Control System)
+# 📌 6. Lógica de control automático
 
 Basado en histéresis:
 
-- reduce cambios innecesarios
-- evita oscilaciones
-- protege compresor
-- mantiene estabilidad térmica
+- evita oscilaciones  
+- protege el compresor  
+- mantiene estabilidad térmica  
+- controla fan speed opcional  
 
 Incluye:
 - deadband configurable  
 - tiempo mínimo entre acciones  
 - límites mínimo/máximo  
-- fan speed opcional  
 
 ---
 
 # 📌 7. Scripts Python incluidos en Node-RED
 
 ### ✔ Lectura RuuviTag  
-(Asíncrono, obtiene último paquete válido)
-
 ### ✔ Obtener key/token Midea  
-(usando msmart-ng)
-
-### ✔ Control LAN  
-(set temperature, mode, fan speed, swing, turbo…)
+### ✔ Control LAN del AC  
 
 ---
 
-# 📌 8. Créditos
+# 📌 8. Acceso Remoto – VNC (Escritorio remoto)
+
+### 🔧 Activar VNC desde interfaz oficial
+```bash
+sudo raspi-config
+```
+
+Ruta:
+```
+Interface Options → VNC → Enable
+```
+
+### 🔧 Activar VNC automáticamente (CLI)
+```bash
+sudo raspi-config nonint do_vnc 0
+```
+
+### 🔧 Forzar inicio con escritorio gráfico
+```bash
+sudo raspi-config
+```
+
+Ruta:
+```
+System Options → Boot / Auto Login → Desktop Autologin
+```
+
+---
+
+# 📌 9. Acceso Remoto Seguro con Tailscale (SSH + VNC)
+
+Basado en la guía oficial:  
+https://tailscale.com/learn/how-to-ssh-into-a-raspberry-pi
+
+### 🔧 Instalar Tailscale
+```bash
+curl -fsSL https://tailscale.com/install.sh | sh
+```
+
+### 🔧 Iniciar Tailscale
+```bash
+sudo tailscale up
+```
+
+Abrir el enlace provisto y autorizar el dispositivo.
+
+### 🟦 Obtener IP Tailscale
+```bash
+tailscale ip -4
+```
+
+### 🟦 SSH vía Tailscale
+```bash
+ssh pi@IP_TAILSCALE
+```
+
+### 🟦 VNC vía Tailscale
+Usar **VNC Viewer** → conectar a:
+```
+IP_TAILSCALE
+```
+
+### 🔧 Arranque automático
+```bash
+sudo systemctl enable tailscaled
+sudo systemctl start tailscaled
+```
+
+---
+
+# 📌 10. Créditos
 
 - RuuviTag Sensor Library  
 - msmart-ng  
@@ -193,6 +248,6 @@ Incluye:
 
 ---
 
-# 📌 9. Licencia
+# 📌 11. Licencia
 
-MIT  
+MIT
